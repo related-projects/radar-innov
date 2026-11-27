@@ -134,7 +134,7 @@ footer{color:var(--mute);font-size:14px;padding:20px 0 40px;border-top:1px solid
   <header class="top">
     <div class="brand"><span class="dot"></span>Radar Innovation</div>
     <div class="meta">
-      <nav class="toplinks" aria-label="Sections"><a href="#synth">Synthèse de la semaine</a><a href="#glos">Glossaire</a></nav>
+      <nav class="toplinks" aria-label="Sections"><a href="#synth" id="synthlink" hidden>Synthèse de la semaine</a><a href="#glos">Glossaire</a></nav>
       <label for="ed">Édition</label>
       <select id="ed"></select>
     </div>
@@ -357,7 +357,7 @@ const ro=new ResizeObserver(drawScope);ro.observe($('#scope'));
 fetch('editions.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{
   setGlossary(j.glossary);renderGlossary();
   SY=(Array.isArray(j.syntheses)?j.syntheses:[]).slice().sort((a,b)=>String(b.week).localeCompare(String(a.week)));
-  if(SY.length){$('#sw').innerHTML=SY.map((s,i)=>`<option value="${esc(s.week)}">${esc(s.label||s.week)}${i===0?' (dernière)':''}</option>`).join('');$('#sw').hidden=SY.length<2;renderSynth(SY[0].week)}
+  if(SY.length){$('#synthlink').hidden=false;$('#sw').innerHTML=SY.map((s,i)=>`<option value="${esc(s.week)}">${esc(s.label||s.week)}${i===0?' (dernière)':''}</option>`).join('');$('#sw').hidden=SY.length<2;renderSynth(SY[0].week)}
   data=(j.editions||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
   if(!data.length){$('#headline').textContent='Aucune édition disponible.';return;}
   $('#ed').innerHTML=data.map((e,i)=>`<option value="${esc(e.date)}">${esc(fmtDate(e.date))}${i===0?' (dernière)':''}</option>`).join('');
