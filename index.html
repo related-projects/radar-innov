@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Innovation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a daily intelligence brief for a Head of Innovation — calm, exact, decisive.
+   IDEA: a control-room radar console: every story is a blip, distance = urgency.
+   PICTURE: a live radar scope plotting the day's signals by theme and urgency.
+   COLOUR and TYPE: steel panel, black, white, alarm red; Inter Tight 600 + Inter.
+   LAYOUT: dominant readout (radar + figure) at ~40%, thin stacked strips beside; feed below. */
+:root{color-scheme:light dark;
+--bg:light-dark(#d5dbe0,#16191c);--panel:light-dark(#ffffff,#1f2327);--ink:light-dark(#0b0c0d,#eef1f3);
+--mute:light-dark(#4a535b,#9aa4ad);--line:light-dark(#b9c2ca,#2e353b);--red:#e8251a;--scope:light-dark(#0b0c0d,#0b0d0f);--grid:#3b444c}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;font-weight:600;margin:0;text-wrap:balance}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(4vw,16px)}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:18px 0 14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Inter Tight";font-weight:700;font-size:19px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 25%,transparent)}
+.meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--mute);font-size:14px}
+select,input{font:16px Inter,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:44px;padding:0 12px}
+select:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.hero{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:20px;padding:24px 0}
+.console{background:var(--scope);color:#eef1f3;border-radius:14px;padding:20px;display:grid;gap:14px;align-content:start}
+.fig{position:relative;min-height:300px;aspect-ratio:1/1;max-height:420px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.readout{border-top:1px solid #2e353b;padding-top:14px}
+.big{font-family:"Inter Tight";font-weight:700;font-size:clamp(36px,5vw,52px);line-height:1.05;white-space:nowrap}
+.readout p{margin:6px 0 0;color:#b8c1c9;font-size:15px}
+.readout a{color:#b8c1c9;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:#b8c1c9}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.brief{display:grid;gap:12px;align-content:start}
+.date{color:var(--mute);font-size:15px}
+.brief h1{font-size:clamp(30px,3.6vw,44px);line-height:1.05}
+.intro{margin:0;max-width:68ch;font-size:17px}
+.strip{background:var(--panel);border-radius:10px;padding:14px 16px 14px 52px;position:relative;border:1px solid var(--line)}
+.strip b{position:absolute;left:16px;top:13px;font-family:"Inter Tight";font-size:20px;color:var(--red)}
+.dl{background:var(--panel);border-radius:10px;border:1px solid var(--line);padding:14px 16px}
+.dl h2{font-size:17px;margin-bottom:6px}
+.dl ul{list-style:none;margin:0;padding:0}
+.dl li{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:15px}
+.dl li:first-child{border-top:0}
+.dl .w{font-weight:600;white-space:nowrap}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0 16px;border-top:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 15px Inter;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools input{flex:1 1 220px}
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:14px;padding-bottom:40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.tag{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--mute);align-items:center}
+.sig{font-weight:600;padding:2px 8px;border-radius:6px;font-size:13px}
+.sig.agir{background:var(--red);color:#fff}
+.sig.surveiller{background:var(--ink);color:var(--bg)}
+.sig.contexte{border:1px solid var(--line);color:var(--mute)}
+.card h3{font-size:19px;line-height:1.2}
+.card p{margin:0;font-size:16px}
+.why{border-left:3px solid var(--red);padding-left:10px;color:var(--ink)}
+.why span{font-weight:600}
+.src{font-size:14px;color:var(--mute)}
+.empty{color:var(--mute);padding:24px 0}
+.card{cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--ink)}
+.card .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.more{font:600 15px Inter;color:var(--red);background:none;border:0;padding:0;min-height:44px;text-align:left;cursor:pointer;justify-self:start}
+.strip{cursor:pointer}.strip:hover{border-color:var(--ink)}
+.blip{cursor:pointer}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:50}
+.ov.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--panel);color:var(--ink);z-index:51;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;padding:22px 24px 40px;display:grid;gap:14px;align-content:start;box-shadow:-10px 0 40px rgba(0,0,0,.25)}
+.drawer.on{transform:none}
+.drawer h2{font-size:clamp(24px,3vw,32px);line-height:1.1}
+.drawer p{margin:0;font-size:17px}
+.drawer .lbl{font:600 13px Inter;color:var(--mute);margin-bottom:-8px}
+.dhead{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.x{min-width:44px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:20px;cursor:pointer}
+.nav{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.btn{font:600 15px Inter;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn.p{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.drawer{transition:none}}
+.term{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dotted color-mix(in srgb,var(--red) 70%,transparent);text-decoration-thickness:2px;text-underline-offset:3px;display:inline;text-align:inherit}
+.term:hover,.term[aria-expanded=true]{background:color-mix(in srgb,var(--red) 14%,transparent);border-radius:3px}
+.console .term,.readout .term{color:#eef1f3}
+#tip{position:fixed;z-index:60;max-width:min(340px,calc(100vw - 24px));background:var(--ink);color:var(--bg);border-radius:10px;padding:12px 14px;font-size:15px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.3);display:none}
+#tip.on{display:block}
+#tip b{display:block;font-family:"Inter Tight";font-size:16px;margin-bottom:4px}
+#tip .tx{position:absolute;top:4px;right:4px;min-width:32px;min-height:32px;border:0;background:none;color:inherit;font-size:18px;cursor:pointer;display:none}
+#tip.pin .tx{display:block}#tip.pin b{padding-right:28px}
+.toplinks{display:flex;gap:6px;flex-wrap:wrap}
+.toplinks a{font:500 15px Inter;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
+.synth{background:var(--ink);color:var(--bg);border-radius:14px;padding:clamp(20px,3vw,32px);margin:4px 0 24px;display:grid;gap:18px}
+.synth .term{color:inherit}
+.shead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+.synth .kick{font:600 14px Inter;color:var(--red)}
+.synth h2{font-size:clamp(26px,3.2vw,40px);line-height:1.08;max-width:24ch}
+.synth .si{margin:0;max-width:70ch;opacity:.85}
+.synth select{background:var(--bg);color:var(--ink)}
+.trends{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.trend{border:1px solid color-mix(in srgb,var(--bg) 25%,transparent);border-radius:10px;padding:14px 16px;display:grid;gap:8px;align-content:start}
+.trend h3{font-size:18px;line-height:1.2}
+.trend p{margin:0;font-size:15px}
+.trend .rc{border-left:3px solid var(--red);padding-left:10px}
+.two{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px}
+.two h3{font-size:18px;margin-bottom:8px}
+.two ol{margin:0;padding-left:1.3em;display:grid;gap:10px}
+.two li{font-size:15px}
+.two li b{display:block}
+.iv{background:color-mix(in srgb,var(--bg) 8%,transparent);border-radius:10px;padding:14px 16px}
+.synth details>summary{cursor:pointer;font:600 15px Inter;min-height:44px;display:flex;align-items:center}
+.glos{border-top:1px solid var(--line);padding:18px 0}
+.glos summary{cursor:pointer;font:600 18px "Inter Tight";min-height:44px;display:flex;align-items:center}
+.glos input{width:100%;margin:8px 0 12px}
+.glos dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:10px 18px;margin:0}
+.glos dl div{border-top:1px solid var(--line);padding-top:8px}
+.glos dt{font-weight:600}.glos dd{margin:2px 0 0;font-size:15px;color:var(--mute)}
+@media(max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
+footer{color:var(--mute);font-size:14px;padding:20px 0 40px;border-top:1px solid var(--line)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.beam{transform-origin:50% 50%;animation:sweep 6s linear infinite}
+@media(prefers-reduced-motion:reduce){.beam{animation:none}}
+@media(max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}.console{order:2}.fig{max-height:360px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="dot"></span>Radar Innovation</div>
+    <div class="meta">
+      <nav class="toplinks" aria-label="Sections"><a href="#synth">Synthèse de la semaine</a><a href="#glos">Glossaire</a></nav>
+      <label for="ed">Édition</label>
+      <select id="ed"></select>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="console" aria-label="Radar des signaux du jour">
+      <div class="fig"><svg id="scope" role="img" aria-label="Radar : chaque point est une actualité, plus il est près du centre, plus il appelle une action"></svg></div>
+      <div class="legend" id="legend"></div>
+      <div class="readout">
+        <div class="big" id="figv"></div>
+        <p id="figl"></p>
+        <a id="figs" href="#"></a>
+      </div>
+    </div>
+    <div class="brief">
+      <div class="date" id="date"></div>
+      <h1 id="headline"></h1>
+      <p class="intro" id="intro"></p>
+      <div id="top3" style="display:grid;gap:10px"></div>
+      <div class="dl"><h2>Échéances à surveiller</h2><ul id="deadlines"></ul></div>
+    </div>
+  </section>
+
+  <section class="synth" id="synth" hidden>
+    <div class="shead"><div class="kick">Synthèse de la semaine</div><select id="sw" aria-label="Choisir la semaine"></select></div>
+    <div><h2 id="stitle"></h2><p class="si" id="sintro"></p></div>
+    <div class="trends" id="strends"></div>
+    <div class="two">
+      <div><h3>Idées de pilotes pour RightCom</h3><ol id="sideas"></ol></div>
+      <div class="iv"><h3>Points pour votre entretien HOI</h3><ol id="siv"></ol></div>
+    </div>
+  </section>
+
+  <div class="tools">
+    <div class="chips" id="chips" role="group" aria-label="Filtrer par thème"></div>
+    <input id="q" type="search" placeholder="Rechercher dans l'édition…" aria-label="Rechercher">
+  </div>
+  <main class="feed" id="feed"></main>
+
+  <div class="ov" id="ov"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dtitle" aria-hidden="true">
+    <div class="dhead"><div class="tag" id="dtag"></div><button class="x" id="dclose" aria-label="Fermer">×</button></div>
+    <h2 id="dtitle"></h2>
+    <div class="lbl">Résumé</div><p id="dsum"></p>
+    <div id="ddetwrap"><div class="lbl">Contexte</div><p id="ddet"></p></div>
+    <div class="lbl">Ce que ça change pour vous</div><p class="why" id="dwhy"></p>
+    <a class="btn p" id="dsrc" target="_blank" rel="noopener"></a>
+    <div class="nav"><button class="btn" id="dprev">← Précédente</button><button class="btn" id="dnext">Suivante →</button></div>
+  </aside>
+
+  <details class="glos" id="glos">
+    <summary id="glossum">Glossaire</summary>
+    <input id="gq" type="search" placeholder="Chercher un terme…" aria-label="Chercher un terme">
+    <dl id="glist"></dl>
+  </details>
+  <div id="tip" role="tooltip"><button class="tx" aria-label="Fermer la définition">×</button><b></b><span></span></div>
+
+  <footer>Les termes <span style="text-decoration:underline dotted var(--red);text-decoration-thickness:2px;text-underline-offset:3px">soulignés en pointillé</span> ont une définition : survolez-les ou touchez-les. Veille préparée et mise à jour chaque matin par Claude. Les résumés sont rédigés à partir des sources liées : ouvrez-les avant toute décision. Code couleur : <b style="color:var(--red)">Agir</b> = opportunité ou risque à traiter, <b>Surveiller</b> = tendance à suivre, Contexte = à savoir.</footer>
+</div>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(String(u||''))?esc(u):'#';
+const SIG={agir:'Agir',surveiller:'Surveiller',contexte:'Contexte'};
+const R={agir:.3,surveiller:.6,contexte:.88};
+const PAL=['#e8251a','#ffffff','#8fd3ff','#ffd166','#7ee0a1','#c9a7ff','#ff9f6e','#9aa4ad','#5ec8c8'];
+let data=[],cur=null,cat='Tout',q='';
+let GL=[],GMAP={},MATCH=[],SY=[];
+function setGlossary(list){
+  GL=(Array.isArray(list)?list:[]).filter(g=>g&&g.term&&g.def);GMAP={};MATCH=[];
+  GL.forEach((g,k)=>{GMAP[k]=g;[g.term,...(g.aliases||[])].forEach(a=>{a=String(a||'');if(a.length<2)return;
+    const cs=/[A-Z]/.test(a);const src=a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    try{MATCH.push({k,len:a.length,re:new RegExp('(?<![\\p{L}\\p{N}])'+src+'(?![\\p{L}\\p{N}])',cs?'gu':'giu')})}catch(e){}})});
+  MATCH.sort((a,b)=>b.len-a.len);
+}
+/* returns escaped HTML with the first occurrence of each glossary term wrapped */
+function gloss(text,seen){
+  const t=String(text??'');if(!MATCH.length||!t)return esc(t);
+  seen=seen||new Set();const hits=[];
+  for(const m of MATCH){if(seen.has(m.k))continue;m.re.lastIndex=0;let r;
+    while((r=m.re.exec(t))){const s=r.index,e=s+r[0].length;
+      if(!hits.some(h=>s<h.e&&e>h.s)){hits.push({s,e,k:m.k});seen.add(m.k);break}}}
+  hits.sort((a,b)=>a.s-b.s);let out='',p=0;
+  for(const h of hits){out+=esc(t.slice(p,h.s))+`<button type="button" class="term" data-g="${h.k}" aria-expanded="false">${esc(t.slice(h.s,h.e))}</button>`;p=h.e}
+  return out+esc(t.slice(p));
+}
+const tip=document.getElementById('tip');let tipFor=null,pinned=false;
+function showTip(el,pin){
+  const g=GMAP[el.dataset.g];if(!g)return;
+  if(tipFor&&tipFor!==el)tipFor.setAttribute('aria-expanded','false');
+  tipFor=el;pinned=!!pin;el.setAttribute('aria-expanded','true');
+  tip.querySelector('b').textContent=g.term;tip.querySelector('span').textContent=g.def;
+  tip.classList.add('on');tip.classList.toggle('pin',pinned);
+  const r=el.getBoundingClientRect(),tw=tip.offsetWidth,th=tip.offsetHeight,vw=innerWidth,vh=innerHeight;
+  let x=Math.min(Math.max(12,r.left+r.width/2-tw/2),vw-tw-12);let y=r.bottom+8;if(y+th>vh-8)y=Math.max(8,r.top-th-8);
+  tip.style.left=x+'px';tip.style.top=y+'px';
+}
+function hideTip(){tip.classList.remove('on','pin');if(tipFor)tipFor.setAttribute('aria-expanded','false');tipFor=null;pinned=false}
+document.addEventListener('pointerover',e=>{const t=e.target.closest&&e.target.closest('.term');if(t&&e.pointerType==='mouse'&&!pinned)showTip(t,false)});
+document.addEventListener('pointerout',e=>{const t=e.target.closest&&e.target.closest('.term');if(t&&!pinned&&!(e.relatedTarget&&tip.contains(e.relatedTarget)))hideTip()});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.term');
+  if(t){e.stopPropagation();e.preventDefault();if(pinned&&tipFor===t)hideTip();else showTip(t,true);return}
+  if(e.target.closest('.tx')||(!tip.contains(e.target)&&tip.classList.contains('on')))hideTip();
+},true);
+document.addEventListener('focusin',e=>{const t=e.target.closest&&e.target.closest('.term');if(t&&!pinned)showTip(t,false)});
+document.addEventListener('focusout',e=>{const t=e.target.closest&&e.target.closest('.term');if(t&&!pinned)hideTip()});
+addEventListener('scroll',()=>{if(tip.classList.contains('on')&&!pinned)hideTip();else if(pinned&&tipFor)showTip(tipFor,true)},{passive:true,capture:true});
+addEventListener('resize',()=>{if(tipFor)showTip(tipFor,pinned)});
+
+function renderGlossary(){
+  $('#glossum').textContent=`Glossaire (${GL.length} termes)`;
+  const qq=($('#gq').value||'').trim().toLowerCase();
+  const l=GL.slice().sort((a,b)=>a.term.localeCompare(b.term,'fr')).filter(g=>!qq||(g.term+' '+(g.aliases||[]).join(' ')+' '+g.def).toLowerCase().includes(qq));
+  $('#glist').innerHTML=l.map(g=>`<div><dt>${esc(g.term)}</dt><dd>${esc(g.def)}</dd></div>`).join('')||'<div><dd>Aucun terme trouvé.</dd></div>';
+}
+function renderSynth(key){
+  const s=SY.find(x=>x.week===key)||SY[0];const box=$('#synth');if(!s){box.hidden=true;return}box.hidden=false;
+  const seen=new Set();
+  $('#stitle').textContent=s.title||'';$('#sintro').innerHTML=gloss(s.intro||'',seen);
+  $('#strends').innerHTML=(s.trends||[]).map(t=>`<div class="trend"><h3>${esc(t.title)}</h3><p>${gloss(t.text,seen)}</p><p class="rc"><b>Pour RightCom : </b>${gloss(t.rightcom,seen)}</p></div>`).join('');
+  $('#sideas').innerHTML=(s.ideas||[]).map(i=>`<li><b>${esc(i.title)}</b>${gloss(i.text,seen)}</li>`).join('');
+  $('#siv').innerHTML=(s.interview||[]).map(i=>`<li>${gloss(i,seen)}</li>`).join('');
+}
+
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const fmtDate=d=>{try{return new Date(d+'T08:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}catch(e){return d}};
+
+function cats(){return [...new Set(cur.items.map(i=>i.cat))]}
+
+function drawScope(){
+  const s=$('#scope');const W=s.clientWidth,H=s.clientHeight;if(!W||!cur)return;
+  const cx=W/2,cy=H/2,r=Math.min(W,H)/2-6;const cs=cats();
+  let g='';
+  g+=`<defs><radialGradient id="bm" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx} ${cy}) scale(${r})"><stop offset="0" stop-color="#e8251a" stop-opacity=".35"/><stop offset="1" stop-color="#e8251a" stop-opacity="0"/></radialGradient></defs>`;
+  [1,.66,.33].forEach(k=>g+=`<circle cx="${cx}" cy="${cy}" r="${r*k}" fill="none" stroke="#3b444c"/>`);
+  cs.forEach((c,i)=>{const a=(i/cs.length)*Math.PI*2-Math.PI/2;g+=`<line x1="${cx}" y1="${cy}" x2="${cx+Math.cos(a)*r}" y2="${cy+Math.sin(a)*r}" stroke="#2a3137"/>`});
+  g+=`<g class="beam"><path d="M${cx} ${cy} L${cx} ${cy-r} A${r} ${r} 0 0 1 ${cx+r*Math.sin(Math.PI/5)} ${cy-r*Math.cos(Math.PI/5)} Z" fill="url(#bm)"/></g>`;
+  const n={};
+  cur.items.forEach((it,idx)=>{
+    const ci=cs.indexOf(it.cat);const k=(n[ci]=(n[ci]||0)+1);
+    const span=(Math.PI*2)/cs.length;const a=ci*span-Math.PI/2+span*(0.25+0.5*((k*0.37)%1));
+    const rr=r*(R[it.signal]||.88)-(k%2)*8;
+    const x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr;const col=PAL[ci%PAL.length];
+    const dim=(cat!=='Tout'&&it.cat!==cat)?.18:1;
+    g+=`<g class="blip" data-i="${idx}" opacity="${dim}"><circle cx="${x}" cy="${y}" r="16" fill="transparent"/>${it.signal==='agir'?`<circle cx="${x}" cy="${y}" r="11" fill="none" stroke="${col}" stroke-opacity=".5"/>`:''}<circle cx="${x}" cy="${y}" r="${it.signal==='agir'?6:4.5}" fill="${col}"><title>${esc(it.title)}</title></circle></g>`;
+  });
+  g+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#e8251a"/>`;
+  if(W>300){g+=`<text x="${cx+4}" y="${cy-r*.33+14}" fill="#9aa4ad" font-size="11" font-family="Inter">Agir</text><text x="${cx+4}" y="${cy-r*.66+14}" fill="#9aa4ad" font-size="11" font-family="Inter">Surveiller</text>`}
+  s.innerHTML=g;
+}
+
+function render(){
+  if(!cur)return;
+  $('#date').textContent=fmtDate(cur.date);
+  $('#headline').textContent=cur.headline;
+  $('#intro').innerHTML=gloss(cur.intro||'');
+  $('#figv').textContent=cur.figure?.value||'';
+  $('#figl').textContent=cur.figure?.label||'';
+  const fs=$('#figs');fs.textContent=cur.figure?.source?('Source : '+cur.figure.source):'';fs.href=cur.figure?.url&&/^https?:/.test(cur.figure.url)?cur.figure.url:'#';
+  $('#top3').innerHTML=(cur.top3||[]).map((t,i)=>{const ref=matchTop(t);return `<div class="strip" ${ref>=0?`data-i="${ref}" tabindex="0" role="button"`:''}><b>${i+1}</b>${gloss(t)}</div>`}).join('');
+  $('#deadlines').innerHTML=(cur.deadlines||[]).map(d=>`<li><span class="w">${esc(d.when)}</span><a href="${safeUrl(d.url)}" target="_blank" rel="noopener">${esc(d.what)}</a></li>`).join('')||'<li>Aucune échéance notée.</li>';
+  const cs=cats();
+  $('#legend').innerHTML=cs.map((c,i)=>`<span><i style="background:${PAL[i%PAL.length]}"></i>${esc(c)}</span>`).join('');
+  $('#chips').innerHTML=['Tout',...cs].map(c=>`<button class="chip" data-c="${esc(c)}" aria-pressed="${c===cat}">${esc(c)}</button>`).join('');
+  const qq=q.trim().toLowerCase();
+  const order={agir:0,surveiller:1,contexte:2};
+  const list=cur.items.filter(i=>(cat==='Tout'||i.cat===cat)&&(!qq||[i.title,i.summary,i.why,i.region,i.cat].join(' ').toLowerCase().includes(qq))).sort((a,b)=>(order[a.signal]??3)-(order[b.signal]??3));
+  view=list;
+  $('#feed').innerHTML=list.map(i=>{const sn=new Set();return `<article class="card" data-i="${cur.items.indexOf(i)}">
+    <div class="tag">${tagHtml(i)}</div>
+    <h3>${gloss(i.title,sn)}</h3><p class="clamp">${gloss(i.summary,sn)}</p>
+    <button class="more" data-i="${cur.items.indexOf(i)}">Lire le résumé complet →</button></article>`}).join('')||'<p class="empty">Aucune actualité ne correspond à ce filtre.</p>';
+  drawScope();
+}
+
+function pick(date){closeD();cur=data.find(e=>e.date===date)||data[0];cat='Tout';render();}
+
+let view=[],openIdx=-1,lastFocus=null;
+function tagHtml(i){return `<span class="sig ${esc(i.signal)}">${esc(SIG[i.signal]||i.signal)}</span><span>${esc(i.cat)}</span><span>${esc(i.region)}</span><span>${esc(i.date)}</span>`}
+function matchTop(t){
+  const w=String(t).toLowerCase().split(/[^a-zà-ÿ0-9]+/).filter(x=>x.length>4);
+  let best=-1,score=0;
+  cur.items.forEach((it,k)=>{const h=(it.title+' '+it.summary).toLowerCase();const s=w.filter(x=>h.includes(x)).length;if(s>score){score=s;best=k}});
+  return score>=2?best:-1;
+}
+function openD(k){
+  const it=cur.items[k];if(!it)return;openIdx=k;
+  if(!$('#drawer').classList.contains('on'))lastFocus=document.activeElement;
+  $('#dtag').innerHTML=tagHtml(it);
+  const sn=new Set();
+  $('#dtitle').innerHTML=gloss(it.title,sn);
+  $('#dsum').innerHTML=gloss(it.summary,sn);
+  $('#ddet').innerHTML=gloss(it.details||'',sn);$('#ddetwrap').style.display=it.details?'':'none';
+  $('#dwhy').innerHTML=gloss(it.why,sn);
+  const a=$('#dsrc');a.textContent='Lire la source : '+it.source+' ↗';a.href=/^https?:/.test(it.url||'')?it.url:'#';
+  const seq=view.length?view.map(v=>cur.items.indexOf(v)):cur.items.map((_,j)=>j);const p=seq.indexOf(k);
+  $('#dprev').disabled=p<=0;$('#dnext').disabled=p<0||p>=seq.length-1;
+  $('#dprev').onclick=()=>p>0&&openD(seq[p-1]);$('#dnext').onclick=()=>p<seq.length-1&&openD(seq[p+1]);
+  $('#ov').classList.add('on');const d=$('#drawer');d.classList.add('on');d.setAttribute('aria-hidden','false');d.scrollTop=0;$('#dclose').focus();
+}
+function closeD(){const d=$('#drawer');if(!d.classList.contains('on'))return;d.classList.remove('on');d.setAttribute('aria-hidden','true');$('#ov').classList.remove('on');openIdx=-1;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+$('#feed').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if(c)openD(+c.dataset.i);});
+$('#top3').addEventListener('click',e=>{const c=e.target.closest('[data-i]');if(c)openD(+c.dataset.i);});
+$('#top3').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const c=e.target.closest('[data-i]');if(c){e.preventDefault();openD(+c.dataset.i)}}});
+$('#scope').addEventListener('click',e=>{const c=e.target.closest('.blip');if(c)openD(+c.dataset.i);});
+$('#ov').addEventListener('click',closeD);$('#dclose').addEventListener('click',closeD);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tip.classList.contains('on')){hideTip();return}if(openIdx<0)return;if(e.target.closest&&e.target.closest('.term')&&(e.key==='ArrowRight'||e.key==='ArrowLeft'))return;if(e.key==='Escape')closeD();if(e.key==='ArrowRight')$('#dnext').click();if(e.key==='ArrowLeft')$('#dprev').click();});
+
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;render();});
+$('#q').addEventListener('input',e=>{q=e.target.value;render();});
+$('#ed').addEventListener('change',e=>{pick(e.target.value);store.set('radar-ed',e.target.value);});
+$('#sw').addEventListener('change',e=>renderSynth(e.target.value));
+$('#gq').addEventListener('input',renderGlossary);
+const ro=new ResizeObserver(drawScope);ro.observe($('#scope'));
+
+fetch('editions.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{
+  setGlossary(j.glossary);renderGlossary();
+  SY=(Array.isArray(j.syntheses)?j.syntheses:[]).slice().sort((a,b)=>String(b.week).localeCompare(String(a.week)));
+  if(SY.length){$('#sw').innerHTML=SY.map((s,i)=>`<option value="${esc(s.week)}">${esc(s.label||s.week)}${i===0?' (dernière)':''}</option>`).join('');$('#sw').hidden=SY.length<2;renderSynth(SY[0].week)}
+  data=(j.editions||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(!data.length){$('#headline').textContent='Aucune édition disponible.';return;}
+  $('#ed').innerHTML=data.map((e,i)=>`<option value="${esc(e.date)}">${esc(fmtDate(e.date))}${i===0?' (dernière)':''}</option>`).join('');
+  pick(data[0].date);
+}).catch(()=>{$('#headline').textContent="L'édition n'a pas pu être chargée. Rechargez la page.";});
+}
+</script>
+</body>
+</html>
